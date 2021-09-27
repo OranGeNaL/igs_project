@@ -67,6 +67,7 @@ void MainWindow::initializeGL(){
     QGLFunctions glFunctions(context());
 
     unsigned short currentMesh = 0;
+
     if(scene->mNumMeshes != 0 && scene->mMeshes[currentMesh]->HasNormals()){
         //----- tmp -----------------
         MyVertex tmpVertex;
@@ -193,7 +194,7 @@ void MainWindow::initializeGL(){
     m_VAO->release();
 
     glMatrixMode(GL_MODELVIEW);
-    glOrtho(-5, 5, -5, 5, -5, 5);
+    glOrtho(-20, 20, -20, 20, -20, 20);
 
     //uniform переменные в шейдере
 
