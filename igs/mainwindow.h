@@ -35,6 +35,7 @@ protected:
   void paintGL();
 
 private:
+  GLuint grifon_tex[1];
   QGLShader *m_VertexShader;
   QGLShader *m_FragmentShader;
   QGLShaderProgram m_program;

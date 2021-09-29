@@ -40,7 +40,8 @@ bool showModelInfo(const aiScene* model){
 void MainWindow::initializeGL(){
     const aiScene* scene = nullptr;
     Assimp::Importer importer;
-    scene = importer.ReadFile("/home/orangeanl/Документы/exported_model_witout_plane.dae", NULL);
+//    scene = importer.ReadFile("/home/orangeanl/Документы/exported_model_witout_plane.dae", NULL);
+    scene = importer.ReadFile("/home/orangeanl/Документы/griffin_animated.dae", NULL);
     if(scene == nullptr){
         qDebug() << "initializeGL::Reading file failed!\n";
         exit(EXIT_FAILURE);
@@ -66,100 +67,44 @@ void MainWindow::initializeGL(){
 
     QGLFunctions glFunctions(context());
 
-    unsigned short currentMesh = 0;
+    //unsigned short currentMesh = 5;
+    for (unsigned int i = 0; i < scene->mNumMeshes; ++i) {
+        if(scene->mNumMeshes != 0 && scene->mMeshes[i]->HasNormals()){
+            //----- tmp -----------------
+            MyVertex tmpVertex;
+            aiVector3D* verteces = scene->mMeshes[i]->mVertices;
+            aiVector3D* normals = scene->mMeshes[i]->mNormals;
+            aiVector3D* texture_coords = scene->mMeshes[i]->mTextureCoords[0];
+            //---------------------------
+            for(unsigned int currentVertex = 0; currentVertex < scene->mMeshes[i]->mNumVertices; ++currentVertex){
+                tmpVertex.x = verteces[currentVertex].x;
+                tmpVertex.y = verteces[currentVertex].y;
+                tmpVertex.z = verteces[currentVertex].z;
 
-    if(scene->mNumMeshes != 0 && scene->mMeshes[currentMesh]->HasNormals()){
-        //----- tmp -----------------
-        MyVertex tmpVertex;
-        aiVector3D* verteces = scene->mMeshes[currentMesh]->mVertices;
-        aiVector3D* normals = scene->mMeshes[currentMesh]->mNormals;
-        aiVector3D* texture_coords = scene->mMeshes[currentMesh]->mTextureCoords[0];
-        //---------------------------
-        for(unsigned int currentVertex = 0; currentVertex < scene->mMeshes[currentMesh]->mNumVertices; ++currentVertex){
-            tmpVertex.x = verteces[currentVertex].x;
-            tmpVertex.y = verteces[currentVertex].y;
-            tmpVertex.z = verteces[currentVertex].z;
+                tmpVertex.nx = normals[currentVertex].x;
+                tmpVertex.ny = normals[currentVertex].y;
+                tmpVertex.nz = normals[currentVertex].z;
 
-            tmpVertex.nx = normals[currentVertex].x;
-            tmpVertex.ny = normals[currentVertex].y;
-            tmpVertex.nz = normals[currentVertex].z;
+                tmpVertex.s0 = texture_coords[currentVertex].x;
+                tmpVertex.t0 = texture_coords[currentVertex].y;
 
-            tmpVertex.s0 = texture_coords[currentVertex].x;
-            tmpVertex.t0 = texture_coords[currentVertex].y;
+                //tmpVertex.s0 = verteces[currentVertex].x;
+                //tmpVertex.t0 = verteces[currentVertex].y;
 
-            //tmpVertex.s0 = verteces[currentVertex].x;
-            //tmpVertex.t0 = verteces[currentVertex].y;
-
-            //qDebug() << verteces[currentVertex].x << verteces[currentVertex].y << verteces[currentVertex].z;
+                //qDebug() << verteces[currentVertex].x << verteces[currentVertex].y << verteces[currentVertex].z;
 
 
-            m_vertexes.append(tmpVertex);
+                m_vertexes.append(tmpVertex);
+            }
+        }
+
+        aiFace* faces = scene->mMeshes[i]->mFaces;
+        for(unsigned int currentFace = 0; currentFace < scene->mMeshes[i]->mNumFaces; ++currentFace){
+            for(unsigned short currentFacePoint = 0; currentFacePoint < faces[currentFace].mNumIndices; ++currentFacePoint){
+                m_indexes.append((GLuint)faces[currentFace].mIndices[currentFacePoint]);
+            }
         }
     }
-
-    aiFace* faces = scene->mMeshes[currentMesh]->mFaces;
-    for(unsigned int currentFace = 0; currentFace < scene->mMeshes[currentMesh]->mNumFaces; ++currentFace){
-        for(unsigned short currentFacePoint = 0; currentFacePoint < faces[currentFace].mNumIndices; ++currentFacePoint){
-            m_indexes.append((GLuint)faces[currentFace].mIndices[currentFacePoint]);
-        }
-    }
-
-    /*MyVertex tmpVertex;
-
-    tmpVertex.x = -0.5;
-    tmpVertex.y = -0.5;
-    tmpVertex.z = 0.0;
-    tmpVertex.nx = 0.0;
-    tmpVertex.ny = 0.0;
-    tmpVertex.nz = 1.0;
-    tmpVertex.s0 = 0.0;
-    tmpVertex.t0 = 0.0;
-
-    m_vertexes.append(tmpVertex);
-
-
-    tmpVertex.x = 0.5;
-    tmpVertex.y = -0.5;
-    tmpVertex.z = 0.0;
-    tmpVertex.nx = 0.0;
-    tmpVertex.ny = 0.0;
-    tmpVertex.nz = 1.0;
-    tmpVertex.s0 = 1.0;
-    tmpVertex.t0 = 0.0;
-
-    m_vertexes.append(tmpVertex);
-
-
-    tmpVertex.x = 0.5;
-    tmpVertex.y = 0.5;
-    tmpVertex.z = 0.0;
-    tmpVertex.nx = 0.0;
-    tmpVertex.ny = 0.0;
-    tmpVertex.nz = 1.0;
-    tmpVertex.s0 = 1.0;
-    tmpVertex.t0 = 1.0;
-
-    m_vertexes.append(tmpVertex);
-
-
-    tmpVertex.x = -0.5;
-    tmpVertex.y = 0.5;
-    tmpVertex.z = 0.0;
-    tmpVertex.nx = 0.0;
-    tmpVertex.ny = 0.0;
-    tmpVertex.nz = 1.0;
-    tmpVertex.s0 = 0.0;
-    tmpVertex.t0 = 1.0;
-
-    m_vertexes.append(tmpVertex);
-
-    m_indexes.append(0);
-    m_indexes.append(1);
-    m_indexes.append(2);
-
-    m_indexes.append(0);
-    m_indexes.append(2);
-    m_indexes.append(3);*/
 
     qDebug() << "\n\nVertices readed:" << m_vertexes.size();
     qDebug() << "Indexes readed:" << m_indexes.size();
@@ -194,7 +139,7 @@ void MainWindow::initializeGL(){
     m_VAO->release();
 
     glMatrixMode(GL_MODELVIEW);
-    glOrtho(-20, 20, -20, 20, -20, 20);
+    glOrtho(-3, 3, -3, 3, -3, 3);
 
     //uniform переменные в шейдере
 
@@ -202,6 +147,41 @@ void MainWindow::initializeGL(){
     //позиция ист света через (uniform) и цвет фона(uniform), блика(uniform) и диффузионный (vec3 + alpha) для света
     //uniform позиция камеры
     //коэффициент фонга
+
+    //реализовать фрагментный шейдер
+    //
+    //
+    //
+    //
+    //
+
+    QImage grifon_tex_image;
+
+    grifon_tex_image.load("/home/orangeanl/Документы/igs_project/griffon_Diff.png");
+    grifon_tex_image = QGLWidget::convertToGLFormat(grifon_tex_image);
+
+    glGenTextures(1, grifon_tex);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, grifon_tex[0]);
+
+    glTexImage2D(GL_TEXTURE_2D, 0, 3, (GLsizei)grifon_tex_image.width(), (GLsizei)grifon_tex_image.height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, grifon_tex_image.bits());
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+    //glEnable(GL_TEXTURE_2D);
+    //glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+
+    //glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+
+//    glVertexPointer(3, GL_FLOAT, 0, cubeVertexArray);
+//    glTexCoordPointer(2, GL_FLOAT, 0, cubeTextureArray);
+
+
+    //glDrawElements(GL_TRIANGLES, m_vertexes.count(), GL_UNSIGNED_INT, 0);
 
 }
 
@@ -212,6 +192,8 @@ void MainWindow::resizeGL(int width, int height){
 void MainWindow::paintGL(){
     glClearColor(0, 0, 0, 0);
     glClear(GL_COLOR_BUFFER_BIT);
+
+    m_program.setUniformValue("grifonTexSampler", 0);
 
     m_program.bind();
     //установка юниформ переменных
