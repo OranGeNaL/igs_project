@@ -6,6 +6,9 @@
 
 MainWindow::MainWindow() : QGLWidget(){}
 
+GLfloat ambientLightIntensivity = 0.5;
+QVector3D ambientLightColor(1.0, 1.0, 1.0);
+
 bool showModelInfo(const aiScene* model){
     qDebug() << "\n\n************************";
     qDebug() << "  Imported model info";
@@ -42,6 +45,7 @@ void MainWindow::initializeGL(){
     Assimp::Importer importer;
 //    scene = importer.ReadFile("/home/orangeanl/Документы/exported_model_witout_plane.dae", NULL);
     scene = importer.ReadFile("/home/orangeanl/Документы/griffin_animated.dae", NULL);
+//    scene = importer.ReadFile("/home/orangeanl/Документы/sphere.dae", NULL);
     if(scene == nullptr){
         qDebug() << "initializeGL::Reading file failed!\n";
         exit(EXIT_FAILURE);
@@ -106,8 +110,13 @@ void MainWindow::initializeGL(){
         }
     }
 
+    qDebug() << "x: " << m_vertexes[1234].x << "y: " << m_vertexes[1234].y << "z: " << m_vertexes[1234].z;
+
     qDebug() << "\n\nVertices readed:" << m_vertexes.size();
     qDebug() << "Indexes readed:" << m_indexes.size();
+
+
+    glEnable(GL_DEPTH_TEST);
 
     m_VAO = new QOpenGLVertexArrayObject();
     m_VBO = new QOpenGLBuffer(QOpenGLBuffer::VertexBuffer);
@@ -127,11 +136,14 @@ void MainWindow::initializeGL(){
     m_EBO->setUsagePattern(QOpenGLBuffer::StaticDraw);
     m_EBO->allocate(m_indexes.data(), m_indexes.size() * sizeof(GLuint));
 
+
+
     m_program.enableAttributeArray(0);
     m_program.setAttributeBuffer(0, GL_FLOAT, 0, 3, sizeof(MyVertex));
 
-    m_program.enableAttributeArray(1);
-    m_program.setAttributeBuffer(1, GL_FLOAT, offsetof(MyVertex, nx), 3, sizeof(MyVertex));
+    int attribNormal = m_program.attributeLocation("vertexNormal");
+    m_program.enableAttributeArray(attribNormal);
+    m_program.setAttributeBuffer(attribNormal, GL_FLOAT, offsetof(MyVertex, nx), 3, sizeof(MyVertex));
 
     m_program.enableAttributeArray(2);
     m_program.setAttributeBuffer(2, GL_FLOAT, offsetof(MyVertex, s0), 2, sizeof(MyVertex));
@@ -140,6 +152,8 @@ void MainWindow::initializeGL(){
 
     glMatrixMode(GL_MODELVIEW);
     glOrtho(-3, 3, -3, 3, -3, 3);
+
+
 
     //uniform переменные в шейдере
 
@@ -192,11 +206,16 @@ void MainWindow::resizeGL(int width, int height){
 void MainWindow::paintGL(){
     glClearColor(0, 0, 0, 0);
     glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_DEPTH_BUFFER_BIT);
 
-    m_program.setUniformValue("grifonTexSampler", 0);
 
     m_program.bind();
     //установка юниформ переменных
+    m_program.setUniformValue("grifonTexSampler", 0);
+    m_program.setUniformValue("ambientLightColor", ambientLightColor);
+    m_program.setUniformValue("ambientLightIntensivity", ambientLightIntensivity);
+
+
     m_VAO->bind();
     glDrawElements(GL_TRIANGLES, m_indexes.size(), GL_UNSIGNED_INT, 0);
     m_VAO->release();
