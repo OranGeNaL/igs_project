@@ -7,7 +7,14 @@
 #include <QGLShader>
 #include <QOpenGLVertexArrayObject>
 #include <QOpenGLBuffer>
-//#include <GL/gl.h>
+
+#include <QKeyEvent>
+#include <QPaintEvent>
+#include <QElapsedTimer>
+#include <QtMath>
+
+
+
 
 #include <assimp/scene.h>
 #include <assimp/Importer.hpp>
@@ -19,7 +26,19 @@ typedef struct MyVertex
     float s0, t0;
   } TMyVertex;
 
+enum Movement{
+    moveUp = 0,
+    moveDown = 1,
+    moveLeft = 2,
+    moveRight = 3
+};
 
+enum Rotation{
+    rotateUp = 0,
+    rotateDown = 1,
+    rotateLeft = 2,
+    rotateRight = 3
+};
 
 struct ShaderVariables
 {
@@ -45,25 +64,10 @@ struct ShaderVariables
     GLfloat viewerYaw = -90;
     GLfloat viewerPitch = 0;
 
-
-//    QVector3D cameraPosition = QVector3D(1.0, 0, 0);
-//    QVector3D cameraFront = QVector3D(0, 0, -1.0);
-//    QVector3D cameraUp = QVector3D(0, 1.0, 0);
-
     QMatrix4x4 modelMatrix;
     QMatrix4x4 viewMatrix;
     QMatrix4x4 projectionMatrix;
     QMatrix4x4 lookAtMatrix;
-
-//    QMatrix4x4 xRotationMatrix = QMatrix4x4(1.0, 0.0, 0.0, 0.0,
-//                                            0.0, 1.0, 0.0, 0.0,
-//                                            0.0, 0.0, 1.0, 0.0,
-//                                            0.0, 0.0, 0.0, 1.0);
-
-//    QMatrix4x4 zRotationMatrix = QMatrix4x4(1.0, 0.0, 0.0, 0.0,
-//                                            0.0, 1.0, 0.0, 0.0,
-//                                            0.0, 0.0, 1.0, 0.0,
-//                                            0.0, 0.0, 0.0, 1.0);
 };
 
 
@@ -83,6 +87,11 @@ protected:
   void resizeGL(int, int);
   void paintGL();
   void setUniformVariables();
+  void Move();
+  void Rotate();
+  void timerEvent(QTimerEvent* event) override;
+  void keyPressEvent(QKeyEvent* event) override;
+  void keyReleaseEvent(QKeyEvent* event) override;
 
 private:
   GLuint grifon_tex[1];
@@ -99,4 +108,6 @@ private:
   QOpenGLBuffer* m_VBO;
   QOpenGLBuffer* m_EBO;
 
+  bool m_move[4] = {false, false, false, false};
+  bool m_rotate[4] = {false, false, false, false};
 };

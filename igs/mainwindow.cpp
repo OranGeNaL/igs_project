@@ -9,6 +9,9 @@ MainWindow::MainWindow() : QGLWidget(){}
 float angle = 0;
 int deltaTime = 1;
 
+float speed = 0.003;
+float sensitivity = 0.05;
+
 bool showModelInfo(const aiScene* model){
     qDebug() << "\n\n************************";
     qDebug() << "  Imported model info";
@@ -152,22 +155,6 @@ void MainWindow::initializeGL(){
     glMatrixMode(GL_MODELVIEW);
     glOrtho(-3, 3, -3, 3, -3, 3);
 
-
-
-    //uniform переменные в шейдере
-
-    //цвет фона(uniform), блика(uniform) и диффузионный (vec3 + alpha)
-    //позиция ист света через (uniform) и цвет фона(uniform), блика(uniform) и диффузионный (vec3 + alpha) для света
-    //uniform позиция камеры
-    //коэффициент фонга
-
-    //реализовать фрагментный шейдер
-    //
-    //
-    //
-    //
-    //
-
     QImage grifon_tex_image;
 
     grifon_tex_image.load("/home/orangeanl/Документы/igs_project/griffon_Diff.png");
@@ -182,19 +169,7 @@ void MainWindow::initializeGL(){
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
-    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
-    //glEnable(GL_TEXTURE_2D);
-    //glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-
-    //glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-
-//    glVertexPointer(3, GL_FLOAT, 0, cubeVertexArray);
-//    glTexCoordPointer(2, GL_FLOAT, 0, cubeTextureArray);
-
-
-    //glDrawElements(GL_TRIANGLES, m_vertexes.count(), GL_UNSIGNED_INT, 0);
+    startTimer(10);
 
 }
 
@@ -203,10 +178,15 @@ void MainWindow::resizeGL(int width, int height){
 }
 
 void MainWindow::paintGL(){
+    QElapsedTimer timer;
+    timer.start();
+
     glClearColor(0, 0, 0, 0);
     glClear(GL_COLOR_BUFFER_BIT);
     glClear(GL_DEPTH_BUFFER_BIT);
 
+    Move();
+    Rotate();
 
     m_program.bind();
     //установка юниформ переменных
@@ -219,6 +199,8 @@ void MainWindow::paintGL(){
 
     glFlush();
     m_program.release();
+
+    deltaTime = timer.elapsed();
 }
 
 void MainWindow::setUniformVariables()
@@ -267,5 +249,122 @@ void MainWindow::setUniformVariables()
 MainWindow::~MainWindow(){
     delete m_VertexShader;
     delete m_FragmentShader;
+}
+
+
+void MainWindow::timerEvent(QTimerEvent*){
+    angle += 0.5;
+    //GLfloat camX = std::sin(angle/16.0) * 3.0;
+    //GLfloat camZ = std::cos(angle/16.0) * 3.0;
+    //m_vars.viewer_position = QVector3D(camX, 0.0, camZ);
+    QPaintEvent ev(rect());
+    paintEvent(&ev);
+}
+
+void MainWindow::keyPressEvent(QKeyEvent* event){
+    switch(event->key()){
+    case Qt::Key::Key_W:
+        m_move[moveUp] = true;
+        break;
+    case Qt::Key::Key_S:
+        m_move[moveDown] = true;
+        break;
+    case Qt::Key::Key_D:
+        m_move[moveRight] = true;
+        break;
+    case Qt::Key::Key_A:
+        m_move[moveLeft] = true;
+        break;
+    case Qt::Key::Key_Up:
+        m_rotate[rotateUp] = true;
+        break;
+    case Qt::Key::Key_Down:
+        m_rotate[rotateDown] = true;
+        break;
+    case Qt::Key::Key_Right:
+        m_rotate[rotateRight] = true;
+        break;
+    case Qt::Key::Key_Left:
+        m_rotate[rotateLeft] = true;
+        break;
+    default:
+        break;
+    }
+}
+
+void MainWindow::keyReleaseEvent(QKeyEvent* event){
+    switch(event->key()){
+    case Qt::Key::Key_W:
+        m_move[moveUp] = false;
+        break;
+    case Qt::Key::Key_S:
+        m_move[moveDown] = false;
+        break;
+    case Qt::Key::Key_D:
+        m_move[moveRight] = false;
+        break;
+    case Qt::Key::Key_A:
+        m_move[moveLeft] = false;
+        break;
+    case Qt::Key::Key_Up:
+        m_rotate[rotateUp] = false;
+        break;
+    case Qt::Key::Key_Down:
+        m_rotate[rotateDown] = false;
+        break;
+    case Qt::Key::Key_Right:
+        m_rotate[rotateRight] = false;
+        break;
+    case Qt::Key::Key_Left:
+        m_rotate[rotateLeft] = false;
+        break;
+    default:
+        break;
+    }
+}
+
+void MainWindow::Move(){
+    GLfloat roundedSpeed = speed * deltaTime;
+    if(m_move[moveUp]){
+        shaderVariables.viewerPosition += roundedSpeed * shaderVariables.viewerFront;
+    }
+    if(m_move[moveDown]){
+        shaderVariables.viewerPosition -= roundedSpeed * shaderVariables.viewerFront;
+    }
+    if(m_move[moveLeft]){
+        QVector3D tmp(QVector3D::crossProduct(shaderVariables.viewerFront, shaderVariables.viewerUp));
+        tmp.normalize();
+        shaderVariables.viewerPosition -= tmp * roundedSpeed;
+    }
+    if(m_move[moveRight]){
+        QVector3D tmp(QVector3D::crossProduct(shaderVariables.viewerFront, shaderVariables.viewerUp));
+        tmp.normalize();
+        shaderVariables.viewerPosition += tmp * roundedSpeed;
+    }
+}
+
+void MainWindow::Rotate(){
+    float roundedSensetivity = sensitivity * deltaTime;
+    if(m_rotate[rotateUp]){
+        if(shaderVariables.viewerPitch < 89.0)
+            shaderVariables.viewerPitch += roundedSensetivity;
+    }
+    if(m_rotate[rotateDown]){
+        if(shaderVariables.viewerPitch > -89.0)
+            shaderVariables.viewerPitch -= roundedSensetivity;
+    }
+    if(m_rotate[rotateLeft]){
+        shaderVariables.viewerYaw -= roundedSensetivity;
+    }
+    if(m_rotate[rotateRight]){
+        shaderVariables.viewerYaw += roundedSensetivity;
+    }
+
+    QVector3D tmp;
+    tmp.setX(std::cos(qDegreesToRadians(shaderVariables.viewerPitch)) * std::cos(qDegreesToRadians(shaderVariables.viewerYaw)));
+    tmp.setY(std::sin(qDegreesToRadians(shaderVariables.viewerPitch)));
+    tmp.setZ(std::cos(qDegreesToRadians(shaderVariables.viewerPitch)) * std::sin(qDegreesToRadians(shaderVariables.viewerYaw)));
+    tmp.normalize();
+    shaderVariables.viewerFront = tmp;
 }
 
