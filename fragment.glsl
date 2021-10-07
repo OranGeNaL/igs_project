@@ -1,21 +1,40 @@
+varying vec3 translatedNormals;
+varying vec2 translatedTexCoords;
+varying vec3 translatedVertexCoords;
+
+uniform sampler2D tex;
 uniform sampler2D grifonTexSampler;
 
-varying vec2 grifonTexCoord;
-varying vec3 vertexCoord;
-varying vec3 normals;
 
-//Фоновый свет
-uniform vec3 ambientLightColor; //Цвет фонового света
-uniform float ambientLightIntensivity;//Интенсивность фонового света
+uniform vec3 lightSourcePosition;
+uniform vec3 ambientLightColor;
+uniform vec3 diffuseLightColor;
+uniform vec3 specularLightColor;
+uniform float ambientLightIntensivity;
+
+uniform vec3 ambientMaterialColor;
+uniform vec3 diffuseMaterialColor;
+uniform vec3 specularMaterialColor;
+uniform float materialShiness;
+
+uniform vec3 viewerPosition;
 
 
 void main(){
-//gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
-    vec4 texturedObjectColor = texture2D(grifonTexSampler, grifonTexCoord);//Расчет цвета пикселя с наложенной текстурой
-    vec3 calculatedAmbientColor = ambientLightColor * ambientLightIntensivity;//Расчет цвета фонового света с учетом его интенсивности
-    vec4 resultObjectColor = texturedObjectColor * vec4(calculatedAmbientColor, 1.0);//Расчет цвета пикселя с применением фонового света
-    
-    
-    gl_FragColor = resultObjectColor;
-    // gl_FragColor = vec4(normals, 1.0);
+    vec4 color = texture2D(tex, translatedTexCoords);
+    vec3 ambientResult = ambientLightColor * ambientLightIntensivity;
+
+    vec3 normalizedNormals = normalize(translatedNormals);
+    vec3 normalizedLightPosition = normalize(translatedVertexCoords - lightSourcePosition);
+    float diffuseImpact = max(dot(normalizedNormals, -normalizedLightPosition), 0.0);
+    vec3 diffuserResult = diffuseLightColor * color.xyz * diffuseImpact;
+
+    vec3 reflected = reflect(normalizedLightPosition, normalizedNormals);
+    vec3 modelToViewerVector = normalize(viewerPosition - translatedVertexCoords);
+    float specularImpact = pow(max(dot(reflected, modelToViewerVector), 0.0), materialShiness);
+    vec3 specularResult = specularLightColor * specularMaterialColor * specularImpact;
+
+    vec3 result = (ambientResult + diffuserResult + specularResult);
+
+    gl_FragColor = vec4(result, 1.0);
 }

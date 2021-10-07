@@ -6,8 +6,8 @@
 
 MainWindow::MainWindow() : QGLWidget(){}
 
-GLfloat ambientLightIntensivity = 0.5;
-QVector3D ambientLightColor(1.0, 1.0, 1.0);
+float angle = 0;
+int deltaTime = 1;
 
 bool showModelInfo(const aiScene* model){
     qDebug() << "\n\n************************";
@@ -43,9 +43,7 @@ bool showModelInfo(const aiScene* model){
 void MainWindow::initializeGL(){
     const aiScene* scene = nullptr;
     Assimp::Importer importer;
-//    scene = importer.ReadFile("/home/orangeanl/Документы/exported_model_witout_plane.dae", NULL);
     scene = importer.ReadFile("/home/orangeanl/Документы/griffin_animated.dae", NULL);
-//    scene = importer.ReadFile("/home/orangeanl/Документы/sphere.dae", NULL);
     if(scene == nullptr){
         qDebug() << "initializeGL::Reading file failed!\n";
         exit(EXIT_FAILURE);
@@ -137,16 +135,17 @@ void MainWindow::initializeGL(){
     m_EBO->allocate(m_indexes.data(), m_indexes.size() * sizeof(GLuint));
 
 
+    int vertexBlock = m_program.attributeLocation("glPoint");
+    m_program.enableAttributeArray(vertexBlock);
+    m_program.setAttributeBuffer(vertexBlock, GL_FLOAT, 0, 3, sizeof(MyVertex));
 
-    m_program.enableAttributeArray(0);
-    m_program.setAttributeBuffer(0, GL_FLOAT, 0, 3, sizeof(MyVertex));
+    int normalBlock = m_program.attributeLocation("glNormal");
+    m_program.enableAttributeArray(normalBlock);
+    m_program.setAttributeBuffer(normalBlock, GL_FLOAT, offsetof(MyVertex, nx), 3, sizeof(MyVertex));
 
-    int attribNormal = m_program.attributeLocation("vertexNormal");
-    m_program.enableAttributeArray(attribNormal);
-    m_program.setAttributeBuffer(attribNormal, GL_FLOAT, offsetof(MyVertex, nx), 3, sizeof(MyVertex));
-
-    m_program.enableAttributeArray(2);
-    m_program.setAttributeBuffer(2, GL_FLOAT, offsetof(MyVertex, s0), 2, sizeof(MyVertex));
+    int textureBlock = m_program.attributeLocation("glTextureCoord");
+    m_program.enableAttributeArray(textureBlock);
+    m_program.setAttributeBuffer(textureBlock, GL_FLOAT, offsetof(MyVertex, s0), 2, sizeof(MyVertex));
 
     m_VAO->release();
 
@@ -211,9 +210,7 @@ void MainWindow::paintGL(){
 
     m_program.bind();
     //установка юниформ переменных
-    m_program.setUniformValue("grifonTexSampler", 0);
-    m_program.setUniformValue("ambientLightColor", ambientLightColor);
-    m_program.setUniformValue("ambientLightIntensivity", ambientLightIntensivity);
+    setUniformVariables();
 
 
     m_VAO->bind();
@@ -222,6 +219,49 @@ void MainWindow::paintGL(){
 
     glFlush();
     m_program.release();
+}
+
+void MainWindow::setUniformVariables()
+{
+    m_program.setUniformValue("lightSourcePosition", shaderVariables.lightSourcePosition);
+
+    m_program.setUniformValue("ambientLightColor", shaderVariables.ambientLightColor);
+    m_program.setUniformValue("ambientMaterialColor", shaderVariables.ambientMaterialColor);
+    m_program.setUniformValue("ambientLightIntensivity", shaderVariables.ambientLightIntensivity);
+
+    m_program.setUniformValue("diffuseLightColor", shaderVariables.diffuseLightColor);
+    m_program.setUniformValue("diffuseMaterialColor", shaderVariables.diffuseMaterialColor);
+
+    m_program.setUniformValue("specularLightColor", shaderVariables.specularLightColor);
+    m_program.setUniformValue("specularMaterialColor", shaderVariables.specularMaterialColor);
+
+    m_program.setUniformValue("materialShiness", shaderVariables.materialShiness);
+
+    m_program.setUniformValue("viewerPosition", shaderVariables.viewerPosition);
+
+//    m_program.setUniformValue("cameraPosition", shaderVariables.cameraPosition);
+//    m_program.setUniformValue("cameraFront", shaderVariables.cameraFront);
+//    m_program.setUniformValue("cameraUp", shaderVariables.cameraUp);
+
+
+    /*
+     * МАНИПУЛЯЦИИ С МАТРИЦАМИ
+     * */
+    shaderVariables.modelMatrix.setToIdentity();
+    shaderVariables.modelMatrix.translate(QVector3D(0.0, 0.0, 0.0));
+    shaderVariables.modelMatrix.scale(QVector3D(0.15, 0.15, 0.15));
+    shaderVariables.modelMatrix.rotate(90.0, QVector3D(-1.0, 0.0, 0.0));
+    shaderVariables.modelMatrix.rotate(angle, QVector3D(0.0, 0.0, 1.0));
+    m_program.setUniformValue("modelMatrix", shaderVariables.modelMatrix);
+
+    shaderVariables.viewMatrix.setToIdentity();
+    shaderVariables.viewMatrix.lookAt(shaderVariables.viewerPosition, shaderVariables.viewerPosition + shaderVariables.viewerFront, shaderVariables.viewerUp);
+    m_program.setUniformValue("viewMatrix", shaderVariables.viewMatrix);
+
+    shaderVariables.projectionMatrix.setToIdentity();
+    shaderVariables.projectionMatrix.perspective(45.0, (GLfloat)width()/(GLfloat)height(), 0.1, 100.0);
+    m_program.setUniformValue("projectionMatrix", shaderVariables.projectionMatrix);
+
 }
 
 MainWindow::~MainWindow(){

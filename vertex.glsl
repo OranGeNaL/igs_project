@@ -1,17 +1,20 @@
 uniform sampler2D grifonTexSampler;
-varying vec2 grifonTexCoord;
-varying vec3 vertexCoord;
-varying vec3 normals;
+uniform mat4 modelMatrix;
+uniform mat4 viewMatrix;
+uniform mat4 projectionMatrix;
 
-attribute vec3 vertexNormal;
-attribute vec2 grifonTexSave;
+attribute vec3 glPoint;
+attribute vec3 glNormal;
+attribute vec2 glTextureCoord;
+
+varying vec3 translatedNormals;
+varying vec2 translatedTexCoords;
+varying vec3 translatedVertexCoords;
+
 
 void main() {
-    gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;
-    //normals
-    vertexCoord = gl_Position.xyz;
-    // mat4 cal;
-    // cal = inverse(cal);
-    normals = normalize(vertexNormal);
-    grifonTexCoord = grifonTexSave;
+    gl_Position = projectionMatrix * viewMatrix * modelMatrix * vec4(glPoint, 1.0);
+    translatedVertexCoords = gl_Position.xyz;
+    translatedNormals = (modelMatrix * vec4(glNormal, 1.0)).xyz;
+    translatedTexCoords = glTextureCoord;
 }
