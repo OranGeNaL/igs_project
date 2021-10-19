@@ -15,10 +15,6 @@
 
 
 
-
-#include <assimp/scene.h>
-#include <assimp/Importer.hpp>
-
 typedef struct MyVertex
   {
     float x, y, z;
@@ -56,7 +52,7 @@ struct ShaderVariables
 
     GLfloat materialShiness = 10.0;
 
-    QVector3D viewerPosition = QVector3D(0, 0, 1.0);
+    QVector3D viewerPosition = QVector3D(0, 0.25, 1.0);
     QVector3D viewerFront = QVector3D(0, 0, -1.0);
     QVector3D viewerTarget = QVector3D(0, 0, 0);
     QVector3D viewerUp = QVector3D(0, 1.0, 0);
@@ -92,6 +88,8 @@ protected:
   void timerEvent(QTimerEvent* event) override;
   void keyPressEvent(QKeyEvent* event) override;
   void keyReleaseEvent(QKeyEvent* event) override;
+  void ReadVertexesFromFile(QVector<MyVertex> *, QString);
+  void ReadIndexesFromFile(QVector<GLuint> *, QString);
 
 private:
   GLuint grifon_tex[1];

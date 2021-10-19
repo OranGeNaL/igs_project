@@ -12,59 +12,61 @@ int deltaTime = 1;
 float speed = 0.003;
 float sensitivity = 0.05;
 
-bool showModelInfo(const aiScene* model){
-    qDebug() << "\n\n************************";
-    qDebug() << "  Imported model info";
-    qDebug() << "************************";
+void MainWindow::ReadIndexesFromFile(QVector<GLuint>* indexes, QString fileName)
+{
+    QFile file(fileName);
 
-    if(model->HasMeshes()){
-        qDebug() << "Meshes amount: " << model->mNumMeshes;
-    }else{
-        qDebug() << "Meshes amount: 0";
-        qDebug() << "Model invalid!";
-        //return false;
+    file.open(QIODevice::ReadOnly);
+
+    foreach (QString i,QString(file.readAll()).split(QRegExp("[\r\n]"),QString::SkipEmptyParts)){
+        GLuint tmpIndex;
+        tmpIndex = i.toInt();
+//        qDebug() << tmpIndex;
+
+        indexes->append(tmpIndex);
     }
 
-    qDebug() << "-------------";
-    qDebug() << "Info per mash:";
-    for(unsigned int meshNum = 0; meshNum < model->mNumMeshes; ++meshNum){
-        qDebug() << "    "  << meshNum + 1 << ". Name:" << model->mMeshes[meshNum]->mName.C_Str();
-        qDebug() << "         Faces:" << model->mMeshes[meshNum]->mNumFaces << ";";
-        qDebug() << "         Primitive type:" << QString("0x" + QString::number(model->mMeshes[meshNum]->mPrimitiveTypes, 16)) << ";";
-        qDebug() << "         Vertices:" << model->mMeshes[meshNum]->mNumVertices << ";";
+    file.close();
+}
 
-        const unsigned short UVChanels = model->mMeshes[meshNum]->GetNumUVChannels();
-        qDebug() << "         UVChanels:" << UVChanels << ";";
-        for(unsigned short currentUVChanel = 0; currentUVChanel < UVChanels; ++currentUVChanel){
-            qDebug() << "           " << currentUVChanel + 1 << "chanel:" << model->mMeshes[meshNum]->mNumUVComponents[currentUVChanel] << "components ;";
-        }
+void MainWindow::ReadVertexesFromFile(QVector<MyVertex>* vertexes, QString fileName)
+{
+    QFile file(fileName);
+
+    file.open(QIODevice::ReadOnly);
+
+    QStringList strings = QString(file.readAll()).split(QRegExp("[\r\n]"));
+
+    for(int i = 0; i < strings.count() - 1; i += 8)
+    {
+        MyVertex tmpVertex;
+        tmpVertex.x = strings[i].toFloat();
+        tmpVertex.y = strings[i + 1].toFloat();
+        tmpVertex.z = strings[i + 2].toFloat();
+        tmpVertex.nx = strings[i + 3].toFloat();
+        tmpVertex.ny = strings[i + 4].toFloat();
+        tmpVertex.nz = strings[i + 5].toFloat();
+        tmpVertex.s0 = strings[i + 6].toFloat();
+        tmpVertex.t0 = strings[i + 7].toFloat();
+
+
+        vertexes->append(tmpVertex);
     }
 
-    return true;
+    file.close();
 }
 
 void MainWindow::initializeGL(){
-    const aiScene* scene = nullptr;
-    Assimp::Importer importer;
-    scene = importer.ReadFile("/home/orangeanl/Документы/griffin_animated.dae", NULL);
-    if(scene == nullptr){
-        qDebug() << "initializeGL::Reading file failed!\n";
-        exit(EXIT_FAILURE);
-    }
-
-    if(!showModelInfo(scene)){
-        exit(EXIT_FAILURE);
-    }
 
     m_VertexShader = new QGLShader(QGLShader::Vertex);
     m_FragmentShader = new QGLShader(QGLShader::Fragment);
 
-    if(!(m_VertexShader->compileSourceFile(/*"../GLSL/vertex.glsl"*/ "/home/orangeanl/Документы/igs_project/vertex.glsl") &&
-         m_FragmentShader->compileSourceFile(/*"../GLSL/fragment.glsl"*/ "/home/orangeanl/Документы/igs_project/fragment.glsl")))
-    {
-        qDebug() << "initializeGL::Source files not found!";
-        exit(EXIT_FAILURE);
-    }
+    if(!(m_VertexShader->compileSourceFile("/Users/orangenal/Documents/igs_project/vertex.glsl") &&
+            m_FragmentShader->compileSourceFile("/Users/orangenal/Documents/igs_project/fragment.glsl")))
+       {
+           qDebug() << "initializeGL::Source files not found!";
+           exit(EXIT_FAILURE);
+       }
 
     m_program.addShader(m_VertexShader);
     m_program.addShader(m_FragmentShader);
@@ -72,46 +74,9 @@ void MainWindow::initializeGL(){
 
     QGLFunctions glFunctions(context());
 
-    //unsigned short currentMesh = 5;
-    for (unsigned int i = 0; i < scene->mNumMeshes; ++i) {
-        if(scene->mNumMeshes != 0 && scene->mMeshes[i]->HasNormals()){
-            //----- tmp -----------------
-            MyVertex tmpVertex;
-            aiVector3D* verteces = scene->mMeshes[i]->mVertices;
-            aiVector3D* normals = scene->mMeshes[i]->mNormals;
-            aiVector3D* texture_coords = scene->mMeshes[i]->mTextureCoords[0];
-            //---------------------------
-            for(unsigned int currentVertex = 0; currentVertex < scene->mMeshes[i]->mNumVertices; ++currentVertex){
-                tmpVertex.x = verteces[currentVertex].x;
-                tmpVertex.y = verteces[currentVertex].y;
-                tmpVertex.z = verteces[currentVertex].z;
 
-                tmpVertex.nx = normals[currentVertex].x;
-                tmpVertex.ny = normals[currentVertex].y;
-                tmpVertex.nz = normals[currentVertex].z;
-
-                tmpVertex.s0 = texture_coords[currentVertex].x;
-                tmpVertex.t0 = texture_coords[currentVertex].y;
-
-                //tmpVertex.s0 = verteces[currentVertex].x;
-                //tmpVertex.t0 = verteces[currentVertex].y;
-
-                //qDebug() << verteces[currentVertex].x << verteces[currentVertex].y << verteces[currentVertex].z;
-
-
-                m_vertexes.append(tmpVertex);
-            }
-        }
-
-        aiFace* faces = scene->mMeshes[i]->mFaces;
-        for(unsigned int currentFace = 0; currentFace < scene->mMeshes[i]->mNumFaces; ++currentFace){
-            for(unsigned short currentFacePoint = 0; currentFacePoint < faces[currentFace].mNumIndices; ++currentFacePoint){
-                m_indexes.append((GLuint)faces[currentFace].mIndices[currentFacePoint]);
-            }
-        }
-    }
-
-    qDebug() << "x: " << m_vertexes[1234].x << "y: " << m_vertexes[1234].y << "z: " << m_vertexes[1234].z;
+    ReadIndexesFromFile(&m_indexes, "/Users/orangenal/Documents/igs_project/griffin_animated_dae-indexes.txt");
+    ReadVertexesFromFile(&m_vertexes, "/Users/orangenal/Documents/igs_project/griffin_animated_dae-vertexes.txt");
 
     qDebug() << "\n\nVertices readed:" << m_vertexes.size();
     qDebug() << "Indexes readed:" << m_indexes.size();
@@ -157,7 +122,7 @@ void MainWindow::initializeGL(){
 
     QImage grifon_tex_image;
 
-    grifon_tex_image.load("/home/orangeanl/Документы/igs_project/griffon_Diff.png");
+    grifon_tex_image.load("/Users/orangenal/Documents/igs_project/griffon_Diff.png");
     grifon_tex_image = QGLWidget::convertToGLFormat(grifon_tex_image);
 
     glGenTextures(1, grifon_tex);

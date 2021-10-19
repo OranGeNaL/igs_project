@@ -23,11 +23,3 @@ qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
-
-
-win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../../assimp-source/assimp/bin/release/ -lassimp.5.0.1
-else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../assimp-source/assimp/bin/debug/ -lassimp.5.0.1
-else:unix: LIBS += -L$$PWD/../../assimp-source/assimp/bin/ -lassimp.5.0.1
-
-INCLUDEPATH += $$PWD/../../assimp-source/assimp/include
-DEPENDPATH += $$PWD/../../assimp-source/assimp/include

@@ -17,7 +17,7 @@ CXX           = /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefau
 DEFINES       = -DQT_QML_DEBUG -DQT_OPENGL_LIB -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CORE_LIB
 CFLAGS        = -pipe -g $(EXPORT_ARCH_ARGS) -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.3.sdk -mmacosx-version-min=10.13 -Wall -Wextra -fPIC $(DEFINES)
 CXXFLAGS      = -pipe -stdlib=libc++ -g -std=gnu++11 $(EXPORT_ARCH_ARGS) -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.3.sdk -mmacosx-version-min=10.13 -Wall -Wextra -fPIC $(DEFINES)
-INCPATH       = -I../igs -I. -I../../assimp-source/assimp/include -I../../../Qt/5.15.2/clang_64/lib/QtOpenGL.framework/Headers -I../../../Qt/5.15.2/clang_64/lib/QtWidgets.framework/Headers -I../../../Qt/5.15.2/clang_64/lib/QtGui.framework/Headers -I../../../Qt/5.15.2/clang_64/lib/QtCore.framework/Headers -I. -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.3.sdk/System/Library/Frameworks/OpenGL.framework/Headers -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.3.sdk/System/Library/Frameworks/AGL.framework/Headers -I. -I../../../Qt/5.15.2/clang_64/mkspecs/macx-clang -F/Users/orangenal/Qt/5.15.2/clang_64/lib
+INCPATH       = -I../igs -I. -I../../../Qt/5.15.2/clang_64/lib/QtOpenGL.framework/Headers -I../../../Qt/5.15.2/clang_64/lib/QtWidgets.framework/Headers -I../../../Qt/5.15.2/clang_64/lib/QtGui.framework/Headers -I../../../Qt/5.15.2/clang_64/lib/QtCore.framework/Headers -I. -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.3.sdk/System/Library/Frameworks/OpenGL.framework/Headers -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.3.sdk/System/Library/Frameworks/AGL.framework/Headers -I. -I../../../Qt/5.15.2/clang_64/mkspecs/macx-clang -F/Users/orangenal/Qt/5.15.2/clang_64/lib
 QMAKE         = /Users/orangenal/Qt/5.15.2/clang_64/bin/qmake
 DEL_FILE      = rm -f
 CHK_DIR_EXISTS= test -d
@@ -40,7 +40,7 @@ DISTNAME      = igs1.0.0
 DISTDIR = /Users/orangenal/Documents/igs_project/build-igs-Desktop_Qt_5_15_2_clang_64bit-Debug/.tmp/igs1.0.0
 LINK          = /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++
 LFLAGS        = -stdlib=libc++ -headerpad_max_install_names $(EXPORT_ARCH_ARGS) -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.3.sdk -mmacosx-version-min=10.13 -Wl,-rpath,@executable_path/../Frameworks -Wl,-rpath,/Users/orangenal/Qt/5.15.2/clang_64/lib
-LIBS          = $(SUBLIBS) -F/Users/orangenal/Qt/5.15.2/clang_64/lib -L/Users/orangenal/Documents/igs_project/igs/../../assimp-source/assimp/bin/ -lassimp.5.0.1 -framework QtOpenGL -framework QtWidgets -framework QtGui -framework AppKit -framework Metal -framework QtCore -framework DiskArbitration -framework IOKit -framework OpenGL -framework AGL   
+LIBS          = $(SUBLIBS) -F/Users/orangenal/Qt/5.15.2/clang_64/lib -framework QtOpenGL -framework QtWidgets -framework QtGui -framework AppKit -framework Metal -framework QtCore -framework DiskArbitration -framework IOKit -framework OpenGL -framework AGL   
 AR            = /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ar cq
 RANLIB        = /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ranlib -s
 SED           = sed
@@ -221,7 +221,6 @@ DIST          = ../../../Qt/5.15.2/clang_64/mkspecs/features/spec_pre.prf \
 		../../../Qt/5.15.2/clang_64/mkspecs/features/qt_config.prf \
 		../../../Qt/5.15.2/clang_64/mkspecs/macx-clang/qmake.conf \
 		../../../Qt/5.15.2/clang_64/mkspecs/features/spec_post.prf \
-		../igs/.qmake.stash \
 		../../../Qt/5.15.2/clang_64/mkspecs/features/exclusive_builds.prf \
 		../../../Qt/5.15.2/clang_64/mkspecs/features/mac/sdk.prf \
 		../../../Qt/5.15.2/clang_64/mkspecs/features/toolchain.prf \
@@ -438,7 +437,6 @@ Makefile: ../igs/igs.pro ../../../Qt/5.15.2/clang_64/mkspecs/macx-clang/qmake.co
 		../../../Qt/5.15.2/clang_64/mkspecs/features/qt_config.prf \
 		../../../Qt/5.15.2/clang_64/mkspecs/macx-clang/qmake.conf \
 		../../../Qt/5.15.2/clang_64/mkspecs/features/spec_post.prf \
-		.qmake.stash \
 		../../../Qt/5.15.2/clang_64/mkspecs/features/exclusive_builds.prf \
 		../../../Qt/5.15.2/clang_64/mkspecs/features/mac/sdk.prf \
 		../../../Qt/5.15.2/clang_64/mkspecs/features/toolchain.prf \
@@ -637,7 +635,6 @@ Makefile: ../igs/igs.pro ../../../Qt/5.15.2/clang_64/mkspecs/macx-clang/qmake.co
 ../../../Qt/5.15.2/clang_64/mkspecs/features/qt_config.prf:
 ../../../Qt/5.15.2/clang_64/mkspecs/macx-clang/qmake.conf:
 ../../../Qt/5.15.2/clang_64/mkspecs/features/spec_post.prf:
-.qmake.stash:
 ../../../Qt/5.15.2/clang_64/mkspecs/features/exclusive_builds.prf:
 ../../../Qt/5.15.2/clang_64/mkspecs/features/mac/sdk.prf:
 ../../../Qt/5.15.2/clang_64/mkspecs/features/toolchain.prf:
@@ -713,7 +710,6 @@ clean: compiler_clean
 
 distclean: clean 
 	-$(DEL_FILE) -r igs.app
-	-$(DEL_FILE) .qmake.stash
 	-$(DEL_FILE) Makefile
 
 
@@ -759,39 +755,9 @@ moc_mainwindow.cpp: ../igs/mainwindow.h \
 		../../../Qt/5.15.2/clang_64/lib/QtCore.framework/Headers/qelapsedtimer.h \
 		../../../Qt/5.15.2/clang_64/lib/QtCore.framework/Headers/QtMath \
 		../../../Qt/5.15.2/clang_64/lib/QtCore.framework/Headers/qmath.h \
-		../../assimp-source/assimp/include/assimp/scene.h \
-		../../assimp-source/assimp/include/assimp/types.h \
-		../../assimp-source/assimp/include/assimp/defs.h \
-		../../assimp-source/assimp/include/assimp/config.h \
-		../../assimp-source/assimp/include/assimp/vector2.h \
-		../../assimp-source/assimp/include/assimp/vector3.h \
-		../../assimp-source/assimp/include/assimp/color4.h \
-		../../assimp-source/assimp/include/assimp/matrix3x3.h \
-		../../assimp-source/assimp/include/assimp/matrix4x4.h \
-		../../assimp-source/assimp/include/assimp/quaternion.h \
-		../../assimp-source/assimp/include/assimp/vector2.inl \
-		../../assimp-source/assimp/include/assimp/vector3.inl \
-		../../assimp-source/assimp/include/assimp/color4.inl \
-		../../assimp-source/assimp/include/assimp/matrix3x3.inl \
-		../../assimp-source/assimp/include/assimp/matrix4x4.inl \
-		../../assimp-source/assimp/include/assimp/MathFunctions.h \
-		../../assimp-source/assimp/include/assimp/quaternion.inl \
-		../../assimp-source/assimp/include/assimp/texture.h \
-		../../assimp-source/assimp/include/assimp/Compiler/pushpack1.h \
-		../../assimp-source/assimp/include/assimp/Compiler/poppack1.h \
-		../../assimp-source/assimp/include/assimp/mesh.h \
-		../../assimp-source/assimp/include/assimp/aabb.h \
-		../../assimp-source/assimp/include/assimp/light.h \
-		../../assimp-source/assimp/include/assimp/camera.h \
-		../../assimp-source/assimp/include/assimp/material.h \
-		../../assimp-source/assimp/include/assimp/material.inl \
-		../../assimp-source/assimp/include/assimp/anim.h \
-		../../assimp-source/assimp/include/assimp/metadata.h \
-		../../assimp-source/assimp/include/assimp/Compiler/pstdint.h \
-		../../assimp-source/assimp/include/assimp/Importer.hpp \
 		moc_predefs.h \
 		../../../Qt/5.15.2/clang_64/bin/moc
-	/Users/orangenal/Qt/5.15.2/clang_64/bin/moc $(DEFINES) --include /Users/orangenal/Documents/igs_project/build-igs-Desktop_Qt_5_15_2_clang_64bit-Debug/moc_predefs.h -I/Users/orangenal/Qt/5.15.2/clang_64/mkspecs/macx-clang -I/Users/orangenal/Documents/igs_project/igs -I/Users/orangenal/Documents/assimp-source/assimp/include -I/Users/orangenal/Qt/5.15.2/clang_64/lib/QtOpenGL.framework/Headers -I/Users/orangenal/Qt/5.15.2/clang_64/lib/QtWidgets.framework/Headers -I/Users/orangenal/Qt/5.15.2/clang_64/lib/QtGui.framework/Headers -I/Users/orangenal/Qt/5.15.2/clang_64/lib/QtCore.framework/Headers -I. -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.3.sdk/usr/include/c++/v1 -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/13.0.0/include -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.3.sdk/usr/include -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include -F/Users/orangenal/Qt/5.15.2/clang_64/lib ../igs/mainwindow.h -o moc_mainwindow.cpp
+	/Users/orangenal/Qt/5.15.2/clang_64/bin/moc $(DEFINES) --include /Users/orangenal/Documents/igs_project/build-igs-Desktop_Qt_5_15_2_clang_64bit-Debug/moc_predefs.h -I/Users/orangenal/Qt/5.15.2/clang_64/mkspecs/macx-clang -I/Users/orangenal/Documents/igs_project/igs -I/Users/orangenal/Qt/5.15.2/clang_64/lib/QtOpenGL.framework/Headers -I/Users/orangenal/Qt/5.15.2/clang_64/lib/QtWidgets.framework/Headers -I/Users/orangenal/Qt/5.15.2/clang_64/lib/QtGui.framework/Headers -I/Users/orangenal/Qt/5.15.2/clang_64/lib/QtCore.framework/Headers -I. -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.3.sdk/usr/include/c++/v1 -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/13.0.0/include -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.3.sdk/usr/include -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include -F/Users/orangenal/Qt/5.15.2/clang_64/lib ../igs/mainwindow.h -o moc_mainwindow.cpp
 
 compiler_moc_objc_header_make_all:
 compiler_moc_objc_header_clean:
@@ -834,36 +800,6 @@ main.o: ../igs/main.cpp ../igs/mainwindow.h \
 		../../../Qt/5.15.2/clang_64/lib/QtCore.framework/Headers/qelapsedtimer.h \
 		../../../Qt/5.15.2/clang_64/lib/QtCore.framework/Headers/QtMath \
 		../../../Qt/5.15.2/clang_64/lib/QtCore.framework/Headers/qmath.h \
-		../../assimp-source/assimp/include/assimp/scene.h \
-		../../assimp-source/assimp/include/assimp/types.h \
-		../../assimp-source/assimp/include/assimp/defs.h \
-		../../assimp-source/assimp/include/assimp/config.h \
-		../../assimp-source/assimp/include/assimp/vector2.h \
-		../../assimp-source/assimp/include/assimp/vector3.h \
-		../../assimp-source/assimp/include/assimp/color4.h \
-		../../assimp-source/assimp/include/assimp/matrix3x3.h \
-		../../assimp-source/assimp/include/assimp/matrix4x4.h \
-		../../assimp-source/assimp/include/assimp/quaternion.h \
-		../../assimp-source/assimp/include/assimp/vector2.inl \
-		../../assimp-source/assimp/include/assimp/vector3.inl \
-		../../assimp-source/assimp/include/assimp/color4.inl \
-		../../assimp-source/assimp/include/assimp/matrix3x3.inl \
-		../../assimp-source/assimp/include/assimp/matrix4x4.inl \
-		../../assimp-source/assimp/include/assimp/MathFunctions.h \
-		../../assimp-source/assimp/include/assimp/quaternion.inl \
-		../../assimp-source/assimp/include/assimp/texture.h \
-		../../assimp-source/assimp/include/assimp/Compiler/pushpack1.h \
-		../../assimp-source/assimp/include/assimp/Compiler/poppack1.h \
-		../../assimp-source/assimp/include/assimp/mesh.h \
-		../../assimp-source/assimp/include/assimp/aabb.h \
-		../../assimp-source/assimp/include/assimp/light.h \
-		../../assimp-source/assimp/include/assimp/camera.h \
-		../../assimp-source/assimp/include/assimp/material.h \
-		../../assimp-source/assimp/include/assimp/material.inl \
-		../../assimp-source/assimp/include/assimp/anim.h \
-		../../assimp-source/assimp/include/assimp/metadata.h \
-		../../assimp-source/assimp/include/assimp/Compiler/pstdint.h \
-		../../assimp-source/assimp/include/assimp/Importer.hpp \
 		../../../Qt/5.15.2/clang_64/lib/QtWidgets.framework/Headers/QApplication \
 		../../../Qt/5.15.2/clang_64/lib/QtWidgets.framework/Headers/qapplication.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o ../igs/main.cpp
@@ -886,36 +822,6 @@ mainwindow.o: ../igs/mainwindow.cpp ../igs/mainwindow.h \
 		../../../Qt/5.15.2/clang_64/lib/QtCore.framework/Headers/qelapsedtimer.h \
 		../../../Qt/5.15.2/clang_64/lib/QtCore.framework/Headers/QtMath \
 		../../../Qt/5.15.2/clang_64/lib/QtCore.framework/Headers/qmath.h \
-		../../assimp-source/assimp/include/assimp/scene.h \
-		../../assimp-source/assimp/include/assimp/types.h \
-		../../assimp-source/assimp/include/assimp/defs.h \
-		../../assimp-source/assimp/include/assimp/config.h \
-		../../assimp-source/assimp/include/assimp/vector2.h \
-		../../assimp-source/assimp/include/assimp/vector3.h \
-		../../assimp-source/assimp/include/assimp/color4.h \
-		../../assimp-source/assimp/include/assimp/matrix3x3.h \
-		../../assimp-source/assimp/include/assimp/matrix4x4.h \
-		../../assimp-source/assimp/include/assimp/quaternion.h \
-		../../assimp-source/assimp/include/assimp/vector2.inl \
-		../../assimp-source/assimp/include/assimp/vector3.inl \
-		../../assimp-source/assimp/include/assimp/color4.inl \
-		../../assimp-source/assimp/include/assimp/matrix3x3.inl \
-		../../assimp-source/assimp/include/assimp/matrix4x4.inl \
-		../../assimp-source/assimp/include/assimp/MathFunctions.h \
-		../../assimp-source/assimp/include/assimp/quaternion.inl \
-		../../assimp-source/assimp/include/assimp/texture.h \
-		../../assimp-source/assimp/include/assimp/Compiler/pushpack1.h \
-		../../assimp-source/assimp/include/assimp/Compiler/poppack1.h \
-		../../assimp-source/assimp/include/assimp/mesh.h \
-		../../assimp-source/assimp/include/assimp/aabb.h \
-		../../assimp-source/assimp/include/assimp/light.h \
-		../../assimp-source/assimp/include/assimp/camera.h \
-		../../assimp-source/assimp/include/assimp/material.h \
-		../../assimp-source/assimp/include/assimp/material.inl \
-		../../assimp-source/assimp/include/assimp/anim.h \
-		../../assimp-source/assimp/include/assimp/metadata.h \
-		../../assimp-source/assimp/include/assimp/Compiler/pstdint.h \
-		../../assimp-source/assimp/include/assimp/Importer.hpp \
 		ui_mainwindow.h \
 		../../../Qt/5.15.2/clang_64/lib/QtOpenGL.framework/Headers/QGLFunctions \
 		../../../Qt/5.15.2/clang_64/lib/QtOpenGL.framework/Headers/qglfunctions.h \
